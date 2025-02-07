@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepseek R1 - Hacker UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Source Code Pro', monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #00ff00;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.light-mode .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark/Light Mode Toggle */
+        .mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: #00ff00;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #ccc;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: #333;
+        }
+
+        #mode-label {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #00ff00;
+        }
+
+        body.light-mode #mode-label {
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        body.light-mode .header h1 {
+            color: #333;
+        }
+
+        .header .cta {
+            font-size: 1.5rem;
+            color: #00ff00;
+        }
+
+        body.light-mode .header .cta {
+            color: #666;
+        }
+
+        .wave {
+            display: inline-block;
+            animation: wave 1.5s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+
+        /* Cards Section */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #00ff00;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        body.light-mode .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-color: #333;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        body.light-mode .card:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        body.light-mode .card-icon {
+            color: #333;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        body.light-mode .card h3 {
+            color: #333;
+        }
+
+        .card p {
+            font-size: 1rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+
+        body.light-mode .card p {
+            color: #666;
+        }
+
+        .card-btn {
+            background-color: #00ff00;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .card-btn {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .card-btn:hover {
+            background-color: #00cc00;
+        }
+
+        body.light-mode .card-btn:hover {
+            background-color: #555;
+        }
+
+        /* Media Upload Section */
+        .media-upload {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .media-upload h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        body.light-mode .media-upload h3 {
+            color: #333;
+        }
+
+        .media-upload input[type="file"] {
+            margin: 10px 0;
+        }
+
+        .media-upload button {
+            background-color: #00ff00;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .media-upload button {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .media-upload button:hover {
+            background-color: #00cc00;
+        }
+
+        body.light-mode .media-upload button:hover {
+            background-color: #555;
+        }
+
+        /* User Input Section */
+        .user-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 40px;
+        }
+
+        .user-input input {
+            flex: 1;
+            padding: 12px 24px;
+            border-radius: 5px;
+            border: 1px solid #00ff00;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #00ff00;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .user-input input {
+            border-color: #333;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .user-input button {
+            background-color: #00ff00;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        body.light-mode .user-input button {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .user-input button:hover {
+            background-color: #00cc00;
+        }
+
+        body.light-mode .user-input button:hover {
+            background-color: #555;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #00ff00;
+        }
+
+        body.light-mode .footer {
+            color: #666;
+        }
+
+        .privacy-link {
+            color: #00ff00;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        body.light-mode .privacy-link {
+            color: #333;
+        }
+
+        .privacy-link:hover {
+            color: #00cc00;
+        }
+
+        body.light-mode .privacy-link:hover {
+            color: #555;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <div class="container">
+        <!-- Dark/Light Mode Toggle -->
+        <div class="mode-toggle">
+            <label class="switch">
+                <input type="checkbox" id="mode-toggle">
+                <span class="slider"></span>
+            </label>
+            <span id="mode-label">Dark Mode</span>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>Hi, there <span class="wave">👋</span></h1>
+            <p class="cta">How can we help?</p>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">🎨</div>
+                <h3>Create a Personal Brand</h3>
+                <p>Help me to create a personal branding and web page</p>
+                <button class="card-btn">Get Started</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h3>Sheet Integration</h3>
+                <p>Connect with Google Sheets or Excel</p>
+                <input type="file" id="sheet-upload" accept=".xlsx, .csv" style="display: none;">
+                <button class="card-btn" id="upload-sheet-btn">Upload Sheet</button>
+            </div>
+            <div class="card">
+                <div class="card-icon">✍️</div>
+                <h3>Tailored Content</h3>
+                <p>Write tailored, engaging content with a focus on quality</p>
+                <button class="card-btn">Start Writing</button>
+            </div>
+        </div>
+
+        <!-- Media Upload Section -->
+        <div class="media-upload">
+            <h3>Upload Media</h3>
+            <input type="file" id="media-upload" accept="image/*, video/*" multiple>
+            <button id="upload-media-btn">Upload Media</button>
+        </div>
+
+        <!-- User Input Section -->
+        <div class="user-input">
+            <input type="text" id="user-query" placeholder="Type your question or request...">
+            <button id="send-btn">Send</button>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Deepseek may display inaccurate info, so please double-check the response. <a href="#" class="privacy-link">Your Privacy & Deepseek AI</a>.</p>
+        </div>
+    </div>
+
+    <script>
+        // Dark/Light Mode Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            const modeToggle = document.getElementById('mode-toggle');
+            const modeLabel = document.getElementById('mode-label');
+            const body = document.body;
+
+            // Load saved mode from localStorage
+            const savedMode = localStorage.getItem('mode');
+            if (savedMode === 'light-mode') {
+                body.classList.add('light-mode');
+                modeToggle.checked = true;
+                modeLabel.textContent = 'Light Mode';
+            } else {
+                modeLabel.textContent = 'Dark Mode';
+            }
+
+            // Toggle dark/light mode
+            modeToggle.addEventListener('change', () => {
+                body.classList.toggle('light-mode');
+                if (body.classList.contains('light-mode')) {
+                    localStorage.setItem('mode', 'light-mode');
+                    modeLabel.textContent = 'Light Mode';
+                } else {
+                    localStorage.setItem('mode', 'dark-mode');
+                    modeLabel.textContent = 'Dark Mode';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
